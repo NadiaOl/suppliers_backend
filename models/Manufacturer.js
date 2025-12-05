@@ -10,10 +10,16 @@ const manufacturerSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      unique: true, // Название производителя должно быть уникальным
+      // unique: true, // Название производителя должно быть уникальным
       trim: true,
     },
     buyer: {
+      // Покупатель, связанный с производителем
+      type: String,
+      required: true,
+      trim: true,
+    },
+    currancy: {
       // Покупатель, связанный с производителем
       type: String,
       required: true,

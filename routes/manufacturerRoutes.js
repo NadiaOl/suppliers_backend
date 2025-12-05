@@ -74,10 +74,11 @@ router.get("/:id", auth, async (req, res) => {
 // PUT /api/manufacturers/:id - Обновить производителя по ID
 router.put("/:id", auth, async (req, res) => {
   try {
-    const { name, buyer } = req.body;
+    const { name, buyer, currancy } = req.body;
     const updatedFields = {};
     if (name) updatedFields.name = name;
     if (buyer) updatedFields.buyer = buyer;
+    if (currancy) updatedFields.currancy = currancy;
 
     const manufacturer = await Manufacturer.findByIdAndUpdate(
       req.params.id,
