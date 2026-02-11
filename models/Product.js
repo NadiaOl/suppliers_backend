@@ -24,8 +24,9 @@ const productSchema = new mongoose.Schema({
   },
   foc: {
     // FOC (Free of Charge - Бесплатно)
-    type: Boolean,
-    default: false,
+    type: Number,
+    required: true,
+    min: 0,
   },
   plan: {
     // План (количество)
