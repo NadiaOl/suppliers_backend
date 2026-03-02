@@ -12,29 +12,58 @@ const router = express.Router();
 // Маршруты для управления Производителями
 // =============================================================================
 
-// POST /api/manufacturers - Добавить нового производителя
+// POST /api/manufacturers
 router.post("/", auth, async (req, res) => {
   try {
-    const { name, buyer } = req.body;
-    if (!name || !buyer) {
+    // 1. Достаем currancy из тела запроса
+    const { name, buyer, currancy } = req.body; 
+
+    // 2. Проверяем наличие всех обязательных полей
+    if (!name || !buyer || !currancy) {
       return res
         .status(400)
-        .json({ message: "Имя производителя и покупатель обязательны" });
+        .json({ message: "Имя, покупатель и валюта обязательны" });
     }
-    const newManufacturer = new Manufacturer({ name, buyer });
+
+    // 3. Передаем все три поля в модель
+    const newManufacturer = new Manufacturer({ name, buyer, currancy });
     const manufacturer = await newManufacturer.save();
+    
     res.status(201).json(manufacturer);
   } catch (err) {
     console.error(err.message);
-    // Обработка ошибки уникальности имени производителя
     if (err.code === 11000) {
       return res
         .status(400)
         .json({ message: "Производитель с таким именем уже существует" });
     }
-    res.status(500).send("Ошибка сервера");
+    // Отправляем JSON вместо обычного текста, чтобы фронтенд не падал
+    res.status(500).json({ message: "Ошибка сервера при создании производителя" });
   }
 });
+// // POST /api/manufacturers - Добавить нового производителя
+// router.post("/", auth, async (req, res) => {
+//   try {
+//     const { name, buyer } = req.body;
+//     if (!name || !buyer) {
+//       return res
+//         .status(400)
+//         .json({ message: "Имя производителя и покупатель обязательны" });
+//     }
+//     const newManufacturer = new Manufacturer({ name, buyer });
+//     const manufacturer = await newManufacturer.save();
+//     res.status(201).json(manufacturer);
+//   } catch (err) {
+//     console.error(err.message);
+//     // Обработка ошибки уникальности имени производителя
+//     if (err.code === 11000) {
+//       return res
+//         .status(400)
+//         .json({ message: "Производитель с таким именем уже существует" });
+//     }
+//     res.status(500).send("Ошибка сервера");
+//   }
+// });
 
 // GET /api/manufacturers - Получить всех производителей (с возможностью поиска по имени)
 router.get("/", auth, async (req, res) => {
