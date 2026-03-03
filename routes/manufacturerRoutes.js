@@ -185,10 +185,9 @@ router.post("/:manufacturerId/products", auth, async (req, res) => {
     });
     await manufacturer.save();
 
-    // Возвращаем только что добавленный продукт (последний в массиве)
-    res
-      .status(201)
-      .json(manufacturer.products[manufacturer.products.length - 1]);
+    // Возвращаем обновленного производителя целиком,
+    // чтобы клиент мог безопасно обновить карточку в UI.
+    res.status(201).json(manufacturer);
   } catch (err) {
     console.error(err.message);
     if (err.kind === "ObjectId") {
@@ -265,7 +264,9 @@ router.put("/:manufacturerId/products/:productId", auth, async (req, res) => {
     Object.assign(product, req.body); // Копируем свойства из req.body в product
     await manufacturer.save(); // Сохраняем родительский документ (производителя)
 
-    res.json(product);
+    // Возвращаем обновленного производителя целиком,
+    // чтобы клиент мог безопасно обновить карточку в UI.
+    res.json(manufacturer);
   } catch (err) {
     console.error(err.message);
     if (err.kind === "ObjectId") {
@@ -300,7 +301,10 @@ router.delete(
       }
 
       await manufacturer.save();
-      res.json({ message: "Продукт успешно удален" });
+
+      // Возвращаем обновленного производителя целиком,
+      // чтобы клиент мог безопасно обновить карточку в UI.
+      res.json(manufacturer);
     } catch (err) {
       console.error(err.message);
       if (err.kind === "ObjectId") {
