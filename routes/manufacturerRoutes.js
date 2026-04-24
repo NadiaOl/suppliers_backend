@@ -12,27 +12,33 @@ const router = express.Router();
 // Маршруты для управления Производителями
 // =============================================================================
 
-// POST /api/manufacturers - Добавить нового производителя
+// POST /api/manufacturers Добавить нового производителя
 router.post("/", auth, async (req, res) => {
   try {
-    const { name, buyer } = req.body;
-    if (!name || !buyer) {
+    // 1. Достаем currancy из тела запроса
+    const { name, buyer, currancy } = req.body; 
+
+    // 2. Проверяем наличие всех обязательных полей
+    if (!name || !buyer || !currancy) {
       return res
         .status(400)
-        .json({ message: "Имя производителя и покупатель обязательны" });
+        .json({ message: "Имя, покупатель и валюта обязательны" });
     }
-    const newManufacturer = new Manufacturer({ name, buyer });
+
+    // 3. Передаем все три поля в модель
+    const newManufacturer = new Manufacturer({ name, buyer, currancy });
     const manufacturer = await newManufacturer.save();
+    
     res.status(201).json(manufacturer);
   } catch (err) {
     console.error(err.message);
-    // Обработка ошибки уникальности имени производителя
     if (err.code === 11000) {
       return res
         .status(400)
         .json({ message: "Производитель с таким именем уже существует" });
     }
-    res.status(500).send("Ошибка сервера");
+    // Отправляем JSON вместо обычного текста, чтобы фронтенд не падал
+    res.status(500).json({ message: "Ошибка сервера при создании производителя" });
   }
 });
 
@@ -156,10 +162,9 @@ router.post("/:manufacturerId/products", auth, async (req, res) => {
     });
     await manufacturer.save();
 
-    // Возвращаем только что добавленный продукт (последний в массиве)
-    res
-      .status(201)
-      .json(manufacturer.products[manufacturer.products.length - 1]);
+    // Возвращаем обновленного производителя целиком,
+    // чтобы клиент мог безопасно обновить карточку в UI.
+    res.status(201).json(manufacturer);
   } catch (err) {
     console.error(err.message);
     if (err.kind === "ObjectId") {
@@ -236,7 +241,9 @@ router.put("/:manufacturerId/products/:productId", auth, async (req, res) => {
     Object.assign(product, req.body); // Копируем свойства из req.body в product
     await manufacturer.save(); // Сохраняем родительский документ (производителя)
 
-    res.json(product);
+    // Возвращаем обновленного производителя целиком,
+    // чтобы клиент мог безопасно обновить карточку в UI.
+    res.json(manufacturer);
   } catch (err) {
     console.error(err.message);
     if (err.kind === "ObjectId") {
@@ -271,7 +278,10 @@ router.delete(
       }
 
       await manufacturer.save();
-      res.json({ message: "Продукт успешно удален" });
+
+      // Возвращаем обновленного производителя целиком,
+      // чтобы клиент мог безопасно обновить карточку в UI.
+      res.json(manufacturer);
     } catch (err) {
       console.error(err.message);
       if (err.kind === "ObjectId") {
