@@ -7,6 +7,7 @@ import cors from "cors";
 import connectDB from "./config/db.js"; // Модуль для подключения к БД (обязательно с .js)
 import authRoutes from "./routes/authRoutes.js"; // Маршруты аутентификации (обязательно с .js)
 import manufacturerRoutes from "./routes/manufacturerRoutes.js"; // Маршруты производителей (обязательно с .js)
+// TODO: import checklistRoutes from "./routes/checklistRoutes.js"; // Маршруты чеклиста (обязательно с .js)
 import dotenv from "dotenv";
 
 dotenv.config(); // Загружаем переменные окружения из .env
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true })); // Для парсинга URL-
 // Основные маршруты
 app.use("/api/auth", authRoutes);
 app.use("/api/manufacturers", manufacturerRoutes);
+// TODO: app.use("/api/checklist", checklistRoutes);
 
 // Простой корневой маршрут для проверки работы сервера
 app.get("/", (req, res) => {

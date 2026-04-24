@@ -284,4 +284,164 @@ router.delete(
   }
 );
 
+// =============================================================================
+// Маршруты для управления Контактами (вложенными в Производителя)
+// =============================================================================
+
+// POST /api/manufacturers/:manufacturerId/contacts - Добавить контакт к производителю
+router.post("/:manufacturerId/contacts", auth, async (req, res) => {
+  try {
+    const { fullName, position, email, phone } = req.body;
+
+    // Простая валидация полей продукта
+    if (!fullName || !email) {
+      return res.status(400).json({
+        message: "Имя и email обязательны",
+      });
+    }
+
+    const manufacturer = await Manufacturer.findById(req.params.manufacturerId);
+    if (!manufacturer) {
+      return res.status(404).json({ message: "Производитель не найден" });
+    }
+
+    // Добавляем новый контакт в массив contacts
+    manufacturer.contacts.push({
+      fullName,
+      position,
+      email,
+      phone,
+    });
+    await manufacturer.save();
+
+    // Возвращаем только что добавленный контакт (последний в массиве)
+    res
+      .status(201)
+      .json(manufacturer.contacts[manufacturer.contacts.length - 1]);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === "ObjectId") {
+      return res.status(400).json({ message: "Неверный ID производителя" });
+    }
+    res.status(500).send("Ошибка сервера");
+  }
+});
+
+// GET /api/manufacturers/:manufacturerId/contacts - Получить все контакты производителя (с возможностью поиска по имени)
+router.get("/:manufacturerId/contacts", auth, async (req, res) => {
+  try {
+    const manufacturer = await Manufacturer.findById(req.params.manufacturerId);
+    if (!manufacturer) {
+      return res.status(404).json({ message: "Производитель не найден" });
+    }
+
+    let contacts = manufacturer.contacts;
+    // Если передан параметр 'fullName' для поиска продукта
+    if (req.query.fullName) {
+      const searchName = new RegExp(req.query.fullName, "i"); // Регистронезависимый поиск
+      contacts = contacts.filter((contact) =>
+        searchName.test(contact.fullName)
+      );
+    }
+
+    res.json(contacts);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === "ObjectId") {
+      return res.status(400).json({ message: "Неверный ID производителя" });
+    }
+    res.status(500).send("Ошибка сервера");
+  }
+});
+
+// GET /api/manufacturers/:manufacturerId/contacts/:contactId - Получить конкретный контакт производителя
+router.get("/:manufacturerId/contacts/:contactId", auth, async (req, res) => {
+  try {
+    const manufacturer = await Manufacturer.findById(req.params.manufacturerId);
+    if (!manufacturer) {
+      return res.status(404).json({ message: "Производитель не найден" });
+    }
+
+    // Используем метод .id() Mongoose для поиска поддокумента по ID
+    const contact = manufacturer.contacts.id(req.params.contactId);
+    if (!contact) {
+      return res.status(404).json({ message: "Контакт не найден" });
+    }
+    res.json(contact);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === "ObjectId") {
+      return res
+        .status(400)
+        .json({ message: "Неверный ID производителя или контакта" });
+    }
+    res.status(500).send("Ошибка сервера");
+  }
+});
+
+// PUT /api/manufacturers/:manufacturerId/contacts/:contactId - Обновить контакт производителя
+router.put("/:manufacturerId/contacts/:contactId", auth, async (req, res) => {
+  try {
+    const manufacturer = await Manufacturer.findById(req.params.manufacturerId);
+    if (!manufacturer) {
+      return res.status(404).json({ message: "Производитель не найден" });
+    }
+
+    const contact = manufacturer.contacts.id(req.params.contactId);
+    if (!contact) {
+      return res.status(404).json({ message: "Контакт не найден" });
+    }
+
+    // Обновляем поля контакта
+    Object.assign(contact, req.body); // Копируем свойства из req.body в contact
+    await manufacturer.save(); // Сохраняем родительский документ (производителя)
+
+    res.json(contact);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === "ObjectId") {
+      return res
+        .status(400)
+        .json({ message: "Неверный ID производителя или контакта" });
+    }
+    res.status(500).send("Ошибка сервера");
+  }
+});
+
+// DELETE /api/manufacturers/:manufacturerId/contacts/:contactId - Удалить контакт производителя
+router.delete(
+  "/:manufacturerId/contacts/:contactId",
+  auth,
+  async (req, res) => {
+    try {
+      const manufacturer = await Manufacturer.findById(
+        req.params.manufacturerId
+      );
+      if (!manufacturer) {
+        return res.status(404).json({ message: "Производитель не найден" });
+      }
+
+      // Используем метод .pull() для удаления поддокумента по ID
+      const initialLength = manufacturer.contacts.length;
+      manufacturer.contacts.pull(req.params.contactId);
+
+      if (manufacturer.contacts.length === initialLength) {
+        // Если длина массива не изменилась, значит, контакт с таким ID не был найден
+        return res.status(404).json({ message: "Контакт не найден" });
+      }
+
+      await manufacturer.save();
+      res.json({ message: "Контакт успешно удален" });
+    } catch (err) {
+      console.error(err.message);
+      if (err.kind === "ObjectId") {
+        return res
+          .status(400)
+          .json({ message: "Неверный ID производителя или контакта" });
+      }
+      res.status(500).send("Ошибка сервера");
+    }
+  }
+);
+
 export default router; // Экспортируем маршрутизатор по умолчанию

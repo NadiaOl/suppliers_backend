@@ -4,6 +4,7 @@
 // =============================================================================
 import mongoose from "mongoose";
 import productSchema from "./Product.js"; // Импортируем схему продукта (обязательно с .js)
+import contactSchema from "./Contact.js"; // Импортируем схему продукта (обязательно с .js)
 
 const manufacturerSchema = new mongoose.Schema(
   {
@@ -26,6 +27,7 @@ const manufacturerSchema = new mongoose.Schema(
       trim: true,
     },
     products: [productSchema], // Массив вложенных документов Product
+    contacts: [contactSchema], // Массив вложенных документов Contact
   },
   { timestamps: true }
 ); // Добавляет поля createdAt и updatedAt автоматически
