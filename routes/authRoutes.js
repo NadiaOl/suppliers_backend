@@ -69,8 +69,8 @@ router.post("/signin", async (req, res) => {
       userId: user.id, // Используем ID пользователя как полезную нагрузку
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    }); // Токен действителен 1 час
+      expiresIn: "30d",
+    }); // Токен действителен 1 месяц
 
     res.json({ token });
   } catch (err) {
