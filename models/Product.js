@@ -10,11 +10,11 @@ const productSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  totalPrice: {
-    // Цена Total
+  gap: {
+    // gap
     type: Number,
     required: true,
-    min: 0, // Цена не может быть отрицательной
+    min: 0,
   },
   billPrice: {
     // Цена Bill
