@@ -55,7 +55,7 @@ router.get("/", auth, async (req, res) => {
     res.json(manufacturers);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -73,7 +73,7 @@ router.get("/:id", auth, async (req, res) => {
     if (err.kind === "ObjectId") {
       return res.status(400).json({ message: "Неверный ID производителя" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -107,7 +107,7 @@ router.put("/:id", auth, async (req, res) => {
         .status(400)
         .json({ message: "Производитель с таким именем уже существует" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -124,7 +124,7 @@ router.delete("/:id", auth, async (req, res) => {
     if (err.kind === "ObjectId") {
       return res.status(400).json({ message: "Неверный ID производителя" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -170,7 +170,7 @@ router.post("/:manufacturerId/products", auth, async (req, res) => {
     if (err.kind === "ObjectId") {
       return res.status(400).json({ message: "Неверный ID производителя" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -195,7 +195,7 @@ router.get("/:manufacturerId/products", auth, async (req, res) => {
     if (err.kind === "ObjectId") {
       return res.status(400).json({ message: "Неверный ID производителя" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -220,7 +220,7 @@ router.get("/:manufacturerId/products/:productId", auth, async (req, res) => {
         .status(400)
         .json({ message: "Неверный ID производителя или продукта" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -251,7 +251,7 @@ router.put("/:manufacturerId/products/:productId", auth, async (req, res) => {
         .status(400)
         .json({ message: "Неверный ID производителя или продукта" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -289,7 +289,7 @@ router.delete(
           .status(400)
           .json({ message: "Неверный ID производителя или продукта" });
       }
-      res.status(500).send("Ошибка сервера");
+      res.status(500).json({ message: "Ошибка сервера" });
     }
   }
 );
@@ -333,7 +333,7 @@ router.post("/:manufacturerId/contacts", auth, async (req, res) => {
     if (err.kind === "ObjectId") {
       return res.status(400).json({ message: "Неверный ID производителя" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -360,7 +360,7 @@ router.get("/:manufacturerId/contacts", auth, async (req, res) => {
     if (err.kind === "ObjectId") {
       return res.status(400).json({ message: "Неверный ID производителя" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -385,7 +385,7 @@ router.get("/:manufacturerId/contacts/:contactId", auth, async (req, res) => {
         .status(400)
         .json({ message: "Неверный ID производителя или контакта" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -414,7 +414,7 @@ router.put("/:manufacturerId/contacts/:contactId", auth, async (req, res) => {
         .status(400)
         .json({ message: "Неверный ID производителя или контакта" });
     }
-    res.status(500).send("Ошибка сервера");
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -449,7 +449,7 @@ router.delete(
           .status(400)
           .json({ message: "Неверный ID производителя или контакта" });
       }
-      res.status(500).send("Ошибка сервера");
+      res.status(500).json({ message: "Ошибка сервера" });
     }
   }
 );
