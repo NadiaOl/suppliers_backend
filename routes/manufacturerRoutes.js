@@ -135,10 +135,10 @@ router.delete("/:id", auth, async (req, res) => {
 // POST /api/manufacturers/:manufacturerId/products - Добавить продукт к производителю
 router.post("/:manufacturerId/products", auth, async (req, res) => {
   try {
-    const { name, gap, billPrice, foc, plan, fact } = req.body;
+    const { name, totalPrice, billPrice, foc, plan, fact } = req.body;
 
     // Простая валидация полей продукта
-    if (!name || gap === undefined || billPrice === undefined) {
+    if (!name || totalPrice === undefined || billPrice === undefined) {
       return res
         .status(400)
         .json({
@@ -154,7 +154,7 @@ router.post("/:manufacturerId/products", auth, async (req, res) => {
     // Добавляем новый продукт в массив products
     manufacturer.products.push({
       name,
-      gap,
+      totalPrice,
       billPrice,
       foc,
       plan,
