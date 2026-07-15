@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  totalPrice: {
+  gap: {
     // gap
     type: Number,
     required: true,

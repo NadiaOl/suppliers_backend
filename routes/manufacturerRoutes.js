@@ -16,7 +16,7 @@ const router = express.Router();
 router.post("/", auth, async (req, res) => {
   try {
     // 1. Достаем currancy из тела запроса
-    const { name, buyer, currancy } = req.body; 
+    const { name, buyer, currancy } = req.body;
 
     // 2. Проверяем наличие всех обязательных полей
     if (!name || !buyer || !currancy) {
@@ -28,7 +28,7 @@ router.post("/", auth, async (req, res) => {
     // 3. Передаем все три поля в модель
     const newManufacturer = new Manufacturer({ name, buyer, currancy });
     const manufacturer = await newManufacturer.save();
-    
+
     res.status(201).json(manufacturer);
   } catch (err) {
     console.error(err.message);
@@ -38,7 +38,9 @@ router.post("/", auth, async (req, res) => {
         .json({ message: "Производитель с таким именем уже существует" });
     }
     // Отправляем JSON вместо обычного текста, чтобы фронтенд не падал
-    res.status(500).json({ message: "Ошибка сервера при создании производителя" });
+    res
+      .status(500)
+      .json({ message: "Ошибка сервера при создании производителя" });
   }
 });
 
@@ -89,7 +91,7 @@ router.put("/:id", auth, async (req, res) => {
     const manufacturer = await Manufacturer.findByIdAndUpdate(
       req.params.id,
       { $set: updatedFields }, // Используем $set для обновления только переданных полей
-      { new: true, runValidators: true } // new: true возвращает обновленный документ, runValidators: true запускает валидаторы схемы
+      { new: true, runValidators: true }, // new: true возвращает обновленный документ, runValidators: true запускает валидаторы схемы
     );
 
     if (!manufacturer) {
@@ -135,15 +137,13 @@ router.delete("/:id", auth, async (req, res) => {
 // POST /api/manufacturers/:manufacturerId/products - Добавить продукт к производителю
 router.post("/:manufacturerId/products", auth, async (req, res) => {
   try {
-    const { name, totalPrice, billPrice, foc, plan, fact } = req.body;
+    const { name, gap, billPrice, foc, plan, fact } = req.body;
 
     // Простая валидация полей продукта
-    if (!name || totalPrice === undefined || billPrice === undefined) {
-      return res
-        .status(400)
-        .json({
-          message: "Название, Gap и Bill Price продукта обязательны",
-        });
+    if (!name || gap === undefined || billPrice === undefined) {
+      return res.status(400).json({
+        message: "Название, Gap и Bill Price продукта обязательны",
+      });
     }
 
     const manufacturer = await Manufacturer.findById(req.params.manufacturerId);
@@ -154,7 +154,7 @@ router.post("/:manufacturerId/products", auth, async (req, res) => {
     // Добавляем новый продукт в массив products
     manufacturer.products.push({
       name,
-      totalPrice,
+      gap,
       billPrice,
       foc,
       plan,
@@ -262,7 +262,7 @@ router.delete(
   async (req, res) => {
     try {
       const manufacturer = await Manufacturer.findById(
-        req.params.manufacturerId
+        req.params.manufacturerId,
       );
       if (!manufacturer) {
         return res.status(404).json({ message: "Производитель не найден" });
@@ -291,7 +291,7 @@ router.delete(
       }
       res.status(500).send("Ошибка сервера");
     }
-  }
+  },
 );
 
 // =============================================================================
@@ -350,7 +350,7 @@ router.get("/:manufacturerId/contacts", auth, async (req, res) => {
     if (req.query.fullName) {
       const searchName = new RegExp(req.query.fullName, "i"); // Регистронезависимый поиск
       contacts = contacts.filter((contact) =>
-        searchName.test(contact.fullName)
+        searchName.test(contact.fullName),
       );
     }
 
@@ -425,7 +425,7 @@ router.delete(
   async (req, res) => {
     try {
       const manufacturer = await Manufacturer.findById(
-        req.params.manufacturerId
+        req.params.manufacturerId,
       );
       if (!manufacturer) {
         return res.status(404).json({ message: "Производитель не найден" });
@@ -451,7 +451,7 @@ router.delete(
       }
       res.status(500).send("Ошибка сервера");
     }
-  }
+  },
 );
 
 export default router; // Экспортируем маршрутизатор по умолчанию
